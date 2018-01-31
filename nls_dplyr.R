@@ -1,0 +1,5 @@
+library(tidyverse)
+library(numDeriv)
+library(GenSA)
+library(nlstools)
+library(nls2)

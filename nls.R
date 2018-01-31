@@ -1,11 +1,10 @@
-setwd("C:/Users/sprot/Dropbox (School of Management)/UCD/442_stats/Class 3")
+#setwd("C:/Users/sprot/Dropbox (School of Management)/UCD/442_stats/Class 3")
 library(tidyverse)
 library(numDeriv)
 library(GenSA)
 library(nlstools)
 library(nls2)
-?nlstools
-?nls2
+
 
 
 data=read.csv("class_data.csv", header=T)    # read csv file and label the data as "data"
