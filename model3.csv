@@ -1,0 +1,11 @@
+"","model","variable0","variable1","variable2","AIC","AICC","BIC"
+"1","model1","price","Radio.Spend","Shopper.Marketing.Spend",18.5527556409134,88.124184212342,33.7734665301829
+"2","model1","price","Radio.Spend","Digital.FSI.Spend",-20.0959637888454,49.4754647825832,-4.87525289957595
+"3",NA,NA,NA,NA,NA,NA,NA
+"4","model1","price","Radio.Spend","WMX.Spend",17.1237021490929,86.6951307205215,32.3444130383623
+"5","model1","price","Shopper.Marketing.Spend","Digital.FSI.Spend",-18.5735971519259,50.9978314195027,-3.35288626265644
+"6",NA,NA,NA,NA,NA,NA,NA
+"7","model1","price","Shopper.Marketing.Spend","WMX.Spend",9.55999088225684,79.1314194536854,24.7807017715263
+"8",NA,NA,NA,NA,NA,NA,NA
+"9","model1","price","Digital.FSI.Spend","WMX.Spend",-20.5912857549184,48.9801428165102,-5.37057486564894
+"10","model1","price","Newspaper.FSI..Spend","WMX.Spend",-593.825598035541,-524.254169464112,-578.604887146271
