@@ -1,4 +1,4 @@
-setwd("C:/Users/sprot/Dropbox (School of Management)/UCD/442_stats/Class 3")
+#setwd("C:/Users/sprot/Dropbox (School of Management)/UCD/442_stats/Class 3")
 library(tidyverse)
 library(numDeriv)
 library(GenSA)
