@@ -90,13 +90,6 @@ bb=out$par										  # use GenSA solution as the starting values for nls()
 
 
 library(minpack.lm)
-#change here 
-out_nls2 = nlsLM(zsales ~ b1 + b2*exp(-b3*zprice) +
-                     (b2*exp(-b3*variable1))/(b4+exp(-b3*variable1)) +
-                     (b5*exp(-b6*variable2))/(b7+exp(-b6*variable2)), start = list(b1=bb[1],b2=bb[2],b3=bb[3],b4=bb[4],b5=bb[5],b6=bb[6],b7=bb[7]))
-summary(out_nls2)
-
-
 ## Step 4. Nonlinear Regression from first principles (works often)
 
 
