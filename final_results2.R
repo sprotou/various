@@ -138,5 +138,5 @@ profit_func <- function(x) {
   return(-profit)
 }
 x0 <- c(15,10000,10000)
-out1 = optim(x0, profit_func, method = "SANN", hessian = TRUE) 
+out1 = optim(x0, profit_func, method = "L-BFGS-B", hessian = TRUE,lower = c(10,5000,5000)) 
 print("Max Profit, Optimal Price, Optimal Spend"); cbind(out1$value,out1$par[1], out1$par[2], out1$par[3])
