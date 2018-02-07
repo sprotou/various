@@ -141,6 +141,6 @@ profit <- function(x) {
   profit = (x[1]-c)*sales - x[2] - x[3] # x[1] is zprice, x[2] and x[3] are the fixed costs
   return(profit)
 }
-x0 <- c(14,50000,50000)
-out = optim(x0, profit, method = "L-BFGS-B", hessian=TRUE, lower = rep(0.5,3)) 
+x0 <- c(10,10,10)
+out = optim(x0, profit, method = "L-BFGS-B", hessian = TRUE) 
 print("Max Profit, Optimal Price, Optimal Spend"); cbind(out$value,out$par[1], out$par[2], out$par[3])
