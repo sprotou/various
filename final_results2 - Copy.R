@@ -129,7 +129,7 @@ df_result <- data.frame(est, tvals, se)
 for(i in 1:9){
     assign(paste0("b",i),df_result$est[i])
 }
-c <- 1 # variable cost
+b1c <- 1 # variable cost
 profit_func <- function(x) {
   sales = b1 + b2*exp(-b3*x[1]) +
     (b4*exp(-b5*x[2]))/(b6+exp(-b5*x[2])) +
@@ -137,9 +137,6 @@ profit_func <- function(x) {
   profit = (x[1]-c)*sales - x[2] - x[3] # x[1] is zprice, x[2] and x[3] are the fixed costs
   return(-profit)
 }
-
-
 x0 <- c(15,100000,100000)
 out1 = optim(x0, profit_func, method = "L-BFGS-B", hessian = TRUE, lower=c(1, 1, 1) ) 
-
 print("Max Profit, Optimal Price, Optimal Spend"); cbind(out1$value,out1$par[1], out1$par[2], out1$par[3])
