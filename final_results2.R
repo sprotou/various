@@ -58,8 +58,8 @@ variable2 = data_div_sd[["WMX.Spend"]]
 nlsmean=function(b, zPriceVar, var1,var2) { #added parameters to input any variable for advertisement type and price
     #change here
     mu <- b[1] + b[2]*exp(-b[3]*zPriceVar) +
-        (b[2]*exp(-b[3]*var1))/(b[4]+exp(-b[3]*var1)) +
-        (b[5]*exp(-b[6]*var2))/(b[7]+exp(-b[6]*var2))		# mu denotes the mean function
+        (b[4]*exp(-b[5]*var1))/(b[6]+exp(-b[5]*var1)) +
+        (b[7]*exp(-b[8]*var2))/(b[9]+exp(-b[8]*var2))		# mu denotes the mean function
     return(mu)
 }
 
@@ -77,9 +77,9 @@ sse=function(b) {
 
 ## Step 2C. Find good starting values using global minimizer like Simualted Annealing (or Genetic Algorithm or Particle Swarm)
 
-par=c(1,1,1,1,1,1,1)								  # starting values for the global optimizer
-lower=c(-15,-15,-3,-15,-3,-15,-3)  				# lower bounds on parameter values
-upper=c(15,15,3,15,3,15,3)  					# upper bounds on parameter values
+par=c(1,1,1,1,1,1,1,1,1)								  # starting values for the global optimizer
+lower=c(-15,-15,-3,-15,-3,-15,-3,-15,-3)  				# lower bounds on parameter values
+upper=c(15,15,3,15,3,15,3,3,15)  					# upper bounds on parameter values
 out=GenSA(par, sse, lower, upper)			# GenSA = Generalized Simulated Annealing bring us near the neighborhood of global solutions
 
 
@@ -90,13 +90,6 @@ bb=out$par										  # use GenSA solution as the starting values for nls()
 
 
 library(minpack.lm)
-#change here 
-out_nls2 = nlsLM(zsales ~ b1 + b2*exp(-b3*zprice) +
-                     (b2*exp(-b3*variable1))/(b4+exp(-b3*variable1)) +
-                     (b5*exp(-b6*variable2))/(b7+exp(-b6*variable2)), start = list(b1=bb[1],b2=bb[2],b3=bb[3],b4=bb[4],b5=bb[5],b6=bb[6],b7=bb[7]))
-summary(out_nls2)
-
-
 ## Step 4. Nonlinear Regression from first principles (works often)
 
 
@@ -113,7 +106,7 @@ err=zsales-yhat								# residuals
 sig2=sum(err^2) /(nn-pp)						# sigma^2 of error term
 jmat=jacobian(nlsmean,x = est, zPriceVar = zprice, var1 = variable1, var2 = variable2)						# jmat = gradient of the mean function at the estimated parameters
 jmat
-varp=sig2*solve(t(jmat) %*% jmat+0.1*diag(7)) 		# variance-covariance matrix of parameters. I added small ridge regularization	to ensure inverse
+varp=sig2*solve(t(jmat) %*% jmat+0.1*diag(9)) 		# variance-covariance matrix of parameters. I added small ridge regularization	to ensure inverse
 se=sqrt(diag(varp))							# diag elements are variances, sqrt makes them std dev
 tvals=est/se									# tvals for inference: abs(tval) > 1. 65 => 90% confidence level; abs(tval) > 1.96 => 95% CI
 
@@ -132,22 +125,18 @@ df_result <- data.frame(est, tvals, se)
 ##############
 #### HW 4 ####
 ##############
-b1 = 0
 # b1 = 1.634239 < 1.65 --> 0 --> 95%
-b2 = df_result$est[2]
-b3 = df_result$est[3]
-b4 = df_result$est[4]
-b5 = df_result$est[5]
-b6 = df_result$est[6]
-b7 = df_result$est[7]
-c <- 1 # variable cost
-profit <- function(x) {
-  sales = b1 + b2*exp(-b3*x[1]) +
-    (b2*exp(-b3*x[2]))/(b4+exp(-b3*x[2])) +
-    (b5*exp(-b6*x[3]))/(b7+exp(-b6*x[3]))
-  profit = (x[1]-c)*sales - x[2] - x[3] # x[1] is zprice, x[2] and x[3] are the fixed costs
-  return(profit)
+for(i in 1:9){
+    assign(paste0("b",i),df_result$est[i])
 }
-x0 <- c(14,50000,50000)
-out = optim(x0, profit, method = "L-BFGS-B", hessian=TRUE, lower = rep(0.5,3)) 
-print("Max Profit, Optimal Price, Optimal Spend"); cbind(out$value,out$par[1], out$par[2], out$par[3])
+c <- 1 # variable cost
+profit_func <- function(x) {
+  sales = b1 + b2*exp(-b3*x[1]) +
+    (b4*exp(-b5*x[2]))/(b6+exp(-b5*x[2])) +
+    (b7*exp(-b8*x[3]))/(b9+exp(-b8*x[3]))
+  profit = (x[1]-c)*sales - x[2] - x[3] # x[1] is zprice, x[2] and x[3] are the fixed costs
+  return(-profit)
+}
+x0 <- c(15,10000,10000)
+out1 = optim(x0, profit_func, method = "SANN", hessian = TRUE) 
+print("Max Profit, Optimal Price, Optimal Spend"); cbind(out1$value,out1$par[1], out1$par[2], out1$par[3])
