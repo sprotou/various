@@ -48,8 +48,8 @@ data_div_sd = data %>%
     mutate_all(funs(myDivSd(.))) #does the division by sd for all columns
 ## Step 1. Scale variables. Most important step. Scale them such that parameter estimates acquire similar magnitudes
 
-result_dataframe <- data.frame(matrix(numeric(),ncol = 8, nrow = nrow(variables_set)))
-colnames(result_dataframe) <- c("model","variable0","variable1","variable2","summary","AIC","AICC","BIC")
+result_dataframe2 <- data.frame(matrix(numeric(),ncol = 8, nrow = nrow(variables_set)))
+colnames(result_dataframe2) <- c("model","variable0","variable1","variable2","summary","AIC","AICC","BIC")
 for(i in 1 : nrow(variables_set)){
     tryCatch({
         print(i)
@@ -63,12 +63,13 @@ for(i in 1 : nrow(variables_set)){
         
         ## Step 2. Find good starting values. To this end, let's apply Global Optimization
         
-        
         ## Step 2A. Specify the model function
         
         nlsmean=function(b, zPriceVar, var1,var2) { #added parameters to input any variable for advertisement type and price
             #change here
-            mu <- b[1]+b[2]/exp(zPriceVar*b[3]) + b[4]*(var1)^b[5] + b[6]*(var2)^b[7]		# mu denotes the mean function
+            mu <- b[1] + b[2]*exp(-b[3]*zPriceVar) +
+                (b[2]*exp(-b[3]*var1))/(b[4]+exp(-b[3]*var1)) +
+                (b[5]*exp(-b[6]*var2))/(b[7]+exp(-b[6]*var2))		# mu denotes the mean function
             return(mu)
         }
         
@@ -100,7 +101,9 @@ for(i in 1 : nrow(variables_set)){
         
         library(minpack.lm)
         #change here 
-        out_nls2 = nlsLM(zsales ~ b1 + b2*exp(-b3*zprice) + b4*variable1^b5 + b6*variable2^b7, start = list(b1=bb[1],b2=bb[2],b3=bb[3],b4=bb[4],b5=bb[5],b6=bb[6],b7=bb[7]))
+        out_nls2 = nlsLM(zsales ~ b1 + b2*exp(-b3*zprice) +
+                             (b2*exp(-b3*variable1))/(b4+exp(-b3*variable1)) +
+                             (b5*exp(-b6*variable2))/(b7+exp(-b6*variable2)), start = list(b1=bb[1],b2=bb[2],b3=bb[3],b4=bb[4],b5=bb[5],b6=bb[6],b7=bb[7]))
         summary(out_nls2)
         
         
@@ -130,14 +133,14 @@ for(i in 1 : nrow(variables_set)){
         aicc = nn*log(sig2) + nn*(nn+pp)/(nn-pp-2)			# Use when pp/nn > 5% => invented by Prof. Tsai at GSM and Hurvich at NYU
         bic = nn*log(sig2) + pp*log(nn)					# Use when nn is large (i.e., pp/nn < 5%)
         
-        result_dataframe[[i,"model"]] <- model_num
-        result_dataframe[[i,"variable0"]] <- "price"
-        result_dataframe[[i,"variable1"]] <- as.character(variables_set[[i,1]])
-        result_dataframe[[i,"variable2"]] <- as.character(variables_set[[i,2]])
-        result_dataframe[[i,"summary"]]  <- list(summary(out_nls2))
-        result_dataframe[[i,"AIC"]] <- aic
-        result_dataframe[[i,"AICC"]] <- aicc
-        result_dataframe[[i,"BIC"]] <- bic },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
+        result_dataframe2[[i,"model"]] <- model_num
+        result_dataframe2[[i,"variable0"]] <- "price"
+        result_dataframe2[[i,"variable1"]] <- as.character(variables_set[[i,1]])
+        result_dataframe2[[i,"variable2"]] <- as.character(variables_set[[i,2]])
+        result_dataframe2[[i,"summary"]]  <- list(summary(out_nls2))
+        result_dataframe2[[i,"AIC"]] <- aic
+        result_dataframe2[[i,"AICC"]] <- aicc
+        result_dataframe2[[i,"BIC"]] <- bic },error=function(e){cat("ERROR :",conditionMessage(e), "\n")})
 }
 
 # x <- data_div_sd$Radio

@@ -1,0 +1,11 @@
+"","model","variable0","variable1","variable2","AIC","AICC","BIC"
+"1",NA,NA,NA,NA,NA,NA,NA
+"2",NA,NA,NA,NA,NA,NA,NA
+"3",NA,NA,NA,NA,NA,NA,NA
+"4",NA,NA,NA,NA,NA,NA,NA
+"5",NA,NA,NA,NA,NA,NA,NA
+"6","model1","price","Shopper.Marketing.Spend","Newspaper.FSI..Spend",-2290.05401386526,-2220.48258529383,-2274.83330297599
+"7","model1","price","Shopper.Marketing.Spend","WMX.Spend",10.6126820239122,80.1841105953408,25.8333929131817
+"8",NA,NA,NA,NA,NA,NA,NA
+"9",NA,NA,NA,NA,NA,NA,NA
+"10",NA,NA,NA,NA,NA,NA,NA
