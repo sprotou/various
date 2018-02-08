@@ -122,3 +122,27 @@ tvals=est/se									# tvals for inference: abs(tval) > 1. 65 => 90% confidence 
 aic = nn*log(sig2) + 2*pp						# Use when nn is large (i.e., pp/nn < 5%)
 aicc = nn*log(sig2) + nn*(nn+pp)/(nn-pp-2)			# Use when pp/nn > 5% => invented by Prof. Tsai at GSM and Hurvich at NYU
 bic = nn*log(sig2) + pp*log(nn)					# Use when nn is large (i.e., pp/nn < 5%)
+
+model_parameter <- data.frame(aic, aicc, bic)
+## Result of est, tvals, and se
+est <- c(est)
+tvals <- c(tvals)
+se <- c(se)
+df_result <- data.frame(est, tvals, se)
+
+##############
+#### HW 4 ####
+##############
+b <- c(df_result$est[1], df_result$est[2], df_result$est[3], df_result$est[4], df_result$est[5], df_result$est[6], df_result$est[7])
+  c <- 1 # variable cost
+profit_func <- function(x) {
+  sales = b[1]/x[1] +
+  (b[2]*exp(-b[3]*x[2]))/(b[4]+exp(-b[3]*x[2])) +
+  (b[5]*exp(-b[6]*x[3]))/(b[7]+exp(-b[6]*x[3]))
+  profit = (x[1]-c)*sales - x[2] - x[3] # x[1] is zprice, x[2] and x[3] are the fixed costs
+  return(profit)
+  }
+x0 <- c(15,10,10)
+out = optim(x0, profit_func, method = "BFGS", hessian = TRUE, control = list(fnscale = -1))
+print("Max Profit, Optimal Price, Optimal Spend"); cbind(out$value,out$par[1],out$par[2],out$par[3])
+control = list(fnscale = -1)
