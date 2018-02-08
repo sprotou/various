@@ -54,12 +54,11 @@ variable2 = data_div_sd[["WMX.Spend"]]
 
 
 ## Step 2A. Specify the model function
-
 nlsmean=function(b, zPriceVar, var1,var2) { #added parameters to input any variable for advertisement type and price
     #change here
     mu <- b[1]/zPriceVar +
-        b[2] + b[3]*var1^b[4] +
-        b[5] + b[6]*var2^b[7]		# mu denotes the mean function
+        b[2]*var1^b[3] +
+        b[4]*var2^b[5]		# mu denotes the mean function
     return(mu)
 }
 
@@ -77,9 +76,9 @@ sse=function(b) {
 
 ## Step 2C. Find good starting values using global minimizer like Simualted Annealing (or Genetic Algorithm or Particle Swarm)
 
-par=c(1,1,1,1,1,1,1)								  # starting values for the global optimizer
-lower=c(-15,-15,-3,-15,-3,-15,-3)  				# lower bounds on parameter values
-upper=c(15,15,3,15,3,15,3)  					# upper bounds on parameter values
+par=c(1,1,1,1,1)								  # starting values for the global optimizer
+lower=c(-15,-15,-3,-15,-3)  				# lower bounds on parameter values
+upper=c(15,15,3,15,3)  					# upper bounds on parameter values
 out=GenSA(par, sse, lower, upper)			# GenSA = Generalized Simulated Annealing bring us near the neighborhood of global solutions
 
 
@@ -90,12 +89,12 @@ bb=out$par										  # use GenSA solution as the starting values for nls()
 
 
 library(minpack.lm)
-#change here 
-out_nls2 = nlsLM(zsales ~ b1/zprice +
-                     b2 + b3*variable1^b4 +
-                     b5 + b6*variable2^b7, start = list(b1=bb[1],b2=bb[2],b3=bb[3],b4=bb[4],b5=bb[5],b6=bb[6],b7=bb[7]))
-summary(out_nls2)
-
+# #change here 
+# out_nls2 = nlsLM(zsales ~ b1/zprice +
+#                      b2 + b3*variable1^b4 +
+#                      b5 + b6*variable2^b7, start = list(b1=bb[1],b2=bb[2],b3=bb[3],b4=bb[4],b5=bb[5],b6=bb[6],b7=bb[7]))
+# summary(out_nls2)
+# 
 
 ## Step 4. Nonlinear Regression from first principles (works often)
 
@@ -113,7 +112,7 @@ err=zsales-yhat								# residuals
 sig2=sum(err^2) /(nn-pp)						# sigma^2 of error term
 jmat=jacobian(nlsmean,x = est, zPriceVar = zprice, var1 = variable1, var2 = variable2)						# jmat = gradient of the mean function at the estimated parameters
 jmat
-varp=sig2*solve(t(jmat) %*% jmat+0.1*diag(7)) 		# variance-covariance matrix of parameters. I added small ridge regularization	to ensure inverse
+varp=sig2*solve(t(jmat) %*% jmat + 0.1*diag(5)) 		# variance-covariance matrix of parameters. I added small ridge regularization	to ensure inverse
 se=sqrt(diag(varp))							# diag elements are variances, sqrt makes them std dev
 tvals=est/se									# tvals for inference: abs(tval) > 1. 65 => 90% confidence level; abs(tval) > 1.96 => 95% CI
 
@@ -122,3 +121,10 @@ tvals=est/se									# tvals for inference: abs(tval) > 1. 65 => 90% confidence 
 aic = nn*log(sig2) + 2*pp						# Use when nn is large (i.e., pp/nn < 5%)
 aicc = nn*log(sig2) + nn*(nn+pp)/(nn-pp-2)			# Use when pp/nn > 5% => invented by Prof. Tsai at GSM and Hurvich at NYU
 bic = nn*log(sig2) + pp*log(nn)					# Use when nn is large (i.e., pp/nn < 5%)
+
+model_parameters <- data.frame(aic, aicc, bic)
+## Result of est, tvals, and se
+est <- c(est)
+tvals <- c(tvals)
+se <- c(se)
+df_result <- data.frame(est, tvals, se)
